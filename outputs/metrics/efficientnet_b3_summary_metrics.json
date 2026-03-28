@@ -1,0 +1,10 @@
+{
+    "best_threshold": 0.9,
+    "accuracy": 0.8702,
+    "precision": 0.8323,
+    "recall": 0.9923,
+    "f1_score": 0.9053,
+    "mae": 0.1298,
+    "cohen_kappa": 0.7041,
+    "roc_auc": 0.9465
+}
