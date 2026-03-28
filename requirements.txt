@@ -6,8 +6,5 @@ pandas
 matplotlib
 scikit-learn
 Pillow
-flask
 tqdm
-seaborn
 streamlit
-pandas
