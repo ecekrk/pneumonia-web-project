@@ -16,7 +16,8 @@ from sklearn.metrics import (
     mean_absolute_error,
     cohen_kappa_score,
     roc_curve,
-    roc_auc_score
+    roc_auc_score,
+    precision_recall_curve
 )
 
 from data_loader import get_dataloaders
@@ -67,7 +68,8 @@ def save_threshold_results(threshold_results, save_path):
             "recall",
             "f1_score",
             "mae",
-            "cohen_kappa"
+            "cohen_kappa",
+            "specificity"
         ])
 
         for row in threshold_results:
@@ -78,7 +80,8 @@ def save_threshold_results(threshold_results, save_path):
                 row["recall"],
                 row["f1_score"],
                 row["mae"],
-                row["cohen_kappa"]
+                row["cohen_kappa"],
+                row["specificity"]
             ])
 
 
@@ -111,10 +114,6 @@ def plot_roc_curve(all_labels, positive_class_probs, save_path):
 
 
 def evaluate_with_threshold(all_labels, positive_class_probs, threshold):
-    """
-    PNEUMONIA için olasılık threshold'u uygular.
-    Eğer olasılık threshold'dan büyük/eşitse 1 (PNEUMONIA), değilse 0 (NORMAL) der.
-    """
     all_preds = (positive_class_probs >= threshold).astype(int)
 
     accuracy = accuracy_score(all_labels, all_preds)
@@ -124,6 +123,11 @@ def evaluate_with_threshold(all_labels, positive_class_probs, threshold):
     mae = mean_absolute_error(all_labels, all_preds)
     cohen_kappa = cohen_kappa_score(all_labels, all_preds)
 
+    # 🔥 Specificity hesaplama
+    cm = confusion_matrix(all_labels, all_preds)
+    tn, fp, fn, tp = cm.ravel()
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
+
     return {
         "threshold": round(float(threshold), 2),
         "accuracy": round(float(accuracy), 4),
@@ -132,9 +136,33 @@ def evaluate_with_threshold(all_labels, positive_class_probs, threshold):
         "f1_score": round(float(f1), 4),
         "mae": round(float(mae), 4),
         "cohen_kappa": round(float(cohen_kappa), 4),
+        "specificity": round(float(specificity), 4),  # ✅ yeni
         "predictions": all_preds
     }
 
+def plot_normalized_confusion_matrix(all_labels, all_preds, class_names, save_path):
+    cm = confusion_matrix(all_labels, all_preds, normalize="true")
+
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
+    disp.plot(cmap="Blues", values_format=".2f")
+
+    plt.title("Normalized Confusion Matrix")
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.close()
+
+def plot_precision_recall_curve(all_labels, positive_class_probs, save_path):
+    precision, recall, _ = precision_recall_curve(all_labels, positive_class_probs)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(recall, precision, label="Precision-Recall Curve")
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.title("Precision-Recall Curve")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.close()
 
 def main():
     os.makedirs("outputs/figures", exist_ok=True)
@@ -230,6 +258,19 @@ def main():
         "outputs/figures/efficientnet_b3_confusion_matrix.png"
     )
 
+    plot_normalized_confusion_matrix(
+        all_labels,
+        all_preds,
+        class_names,
+        "outputs/figures/efficientnet_b3_confusion_matrix_normalized.png"
+    )
+
+    plot_precision_recall_curve(
+        all_labels,
+        positive_class_probs,
+        "outputs/figures/efficientnet_b3_pr_curve.png"
+    )
+
     summary_metrics = {
         "best_threshold": round(float(best_threshold), 2),
         "accuracy": best_result["accuracy"],
@@ -238,6 +279,7 @@ def main():
         "f1_score": best_result["f1_score"],
         "mae": best_result["mae"],
         "cohen_kappa": best_result["cohen_kappa"],
+        "specificity": best_result["specificity"],
         "roc_auc": round(float(auc_score), 4)
     }
 

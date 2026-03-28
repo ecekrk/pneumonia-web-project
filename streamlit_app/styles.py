@@ -127,3 +127,50 @@ def get_custom_css():
         }
     </style>
     """
+def get_upload_css():
+    return """
+    <style>
+    /* Upload container */
+    .upload-box {
+        border: 2px dashed #3b82f6;
+        border-radius: 16px;
+        padding: 30px;
+        text-align: center;
+        background: rgba(59, 130, 246, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .upload-box:hover {
+        border-color: #60a5fa;
+        background: rgba(59, 130, 246, 0.12);
+    }
+
+    .upload-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .upload-sub {
+        font-size: 14px;
+        color: #cbd5e1;
+        margin-bottom: 20px;
+    }
+
+    /* Streamlit default uploaderı güzelleştir */
+    div[data-testid="stFileUploader"] {
+        border: none;
+    }
+
+    div[data-testid="stFileUploader"] section {
+        border: none !important;
+        background: transparent !important;
+    }
+
+    div[data-testid="stFileUploader"] button {
+        border-radius: 10px !important;
+        padding: 8px 16px !important;
+        font-size: 14px !important;
+    }
+    </style>
+    """

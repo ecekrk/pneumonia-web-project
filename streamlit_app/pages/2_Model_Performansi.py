@@ -60,53 +60,60 @@ with col1:
     metric_box(
         "Accuracy",
         metrics.get("accuracy", "-"),
-        "Modelin tüm test örnekleri içindeki genel doğru tahmin oranını gösterir."
+        "Modelin tüm tahminler içindeki doğruluk oranını gösterir (TP + TN) / (TP + TN + FP + FN)."
     )
 
 with col2:
     metric_box(
         "Precision",
         metrics.get("precision", "-"),
-        "Pnömoni tahminlerinin ne kadarının gerçekten pnömoni olduğunu gösterir."
+        "Pnömoni olarak tahmin edilenlerin ne kadarının gerçekten pnömoni olduğunu gösterir: TP / (TP + FP)."
     )
 
 with col3:
     metric_box(
         "Recall",
         metrics.get("recall", "-"),
-        "Gerçek pnömoni vakalarının model tarafından yakalanma oranını gösterir."
+        "Gerçek pnömoni vakalarının ne kadarının doğru yakalandığını gösterir: TP / (TP + FN)."
     )
 
 with col4:
     metric_box(
         "F1-Score",
         metrics.get("f1_score", "-"),
-        "Precision ve recall dengesini özetleyen birleşik performans ölçüsüdür."
+        "Precision ve recall dengesini gösteren harmonik ortalamadır: 2TP / (2TP + FP + FN)."
     )
 
 st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
 
-col5, col6, col7 = st.columns(3, gap="medium")
+col5, col6, col7, col8 = st.columns(4, gap="medium")
 
 with col5:
     metric_box(
         "MAE",
         metrics.get("mae", "-"),
-        "Tahmin edilen sınıf ile gerçek sınıf arasındaki ortalama hata miktarını gösterir."
+        "Tahmin ile gerçek değer arasındaki ortalama hata miktarını ölçer (yanlış sınıflandırma oranına karşılık gelir)."
     )
 
 with col6:
     metric_box(
         "Cohen's Kappa",
         metrics.get("cohen_kappa", "-"),
-        "Model uyumunu, rastgele tahmin etkisini dışlayarak değerlendiren metriktir."
+        "Modelin rastgele tahmine göre ne kadar daha iyi olduğunu ölçer (1’e yaklaştıkça daha iyi)."
     )
 
 with col7:
     metric_box(
         "ROC-AUC",
         metrics.get("roc_auc", "-"),
-        "Modelin sınıfları farklı eşik değerlerinde ayırt etme gücünü gösterir."
+        "Modelin farklı eşiklerde sınıfları ayırt etme başarısını gösterir (1’e yakın değerler daha iyidir)."
+    )
+
+with col8:
+    metric_box(
+        "Specificity",
+        metrics.get("specificity", "-"),
+        "Sağlıklı (NORMAL) vakaların doğru şekilde tanınma oranını gösterir: TN / (TN + FP)."
     )
 
 st.markdown("### Seçilen Threshold")
@@ -117,7 +124,7 @@ st.markdown(
             <b>Best Threshold:</b> {metrics.get('best_threshold', '-')}
         </p>
         <p style="margin-top:8px;">
-            Bu eşik değeri, modelin pnömoni olasılığına göre daha dengeli karar vermesi için seçilmiştir.
+            Threshold, modelin çıktısını sınıflandırma kararına dönüştürmek için kullanılan bir eşik değeridir. Bu eşik değeri, modelin pnömoni olasılığına göre daha dengeli ve kontrollü karar vermesini sağlamak amacıyla seçilmiştir.
         </p>
     </div>
     """,
@@ -135,6 +142,14 @@ if cm_path.exists():
 else:
     st.warning("Confusion matrix görseli bulunamadı.")
 
+st.markdown("### Normalized Confusion Matrix")
+norm_cm_path = BASE_DIR / "outputs" / "figures" / "efficientnet_b3_confusion_matrix_normalized.png"
+
+if norm_cm_path.exists():
+    st.image(str(norm_cm_path), use_container_width=True)
+else:
+    st.warning("Normalized confusion matrix bulunamadı.")
+
 st.markdown("### ROC Curve")
 roc_path = get_figure_path("efficientnet_b3_roc_curve.png")
 if roc_path.exists():
@@ -142,6 +157,19 @@ if roc_path.exists():
     st.image(roc_img, use_container_width=True)
 else:
     st.warning("ROC curve görseli bulunamadı.")
+
+st.markdown("### Precision-Recall Curve")
+pr_curve_path = BASE_DIR / "outputs" / "figures" / "efficientnet_b3_pr_curve.png"
+
+if pr_curve_path.exists():
+    st.image(str(pr_curve_path), use_container_width=True)
+else:
+    st.warning("Precision-Recall curve bulunamadı.")
+st.markdown(
+    """
+    Precision-Recall eğrisi, özellikle sınıf dengesizliği bulunan veri setlerinde model performansını daha doğru analiz etmek için kullanılır.
+    """
+)
 
 st.markdown("### Eğitim Grafikleri")
 
