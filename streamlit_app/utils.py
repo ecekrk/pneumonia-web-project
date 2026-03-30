@@ -2,8 +2,9 @@ import json
 import os
 import sys
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageStat
 import streamlit as st
+import numpy as np
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -13,6 +14,7 @@ if str(SRC_DIR) not in sys.path:
     sys.path.append(str(SRC_DIR))
 
 from predict import predict_image  # noqa: E402
+from validate_input import validate_xray_image
 
 
 def load_summary_metrics():
@@ -30,6 +32,45 @@ def get_figure_path(filename):
 def get_metric_path(filename):
     return BASE_DIR / "outputs" / "metrics" / filename
 
+def validate_xray_image(image_path):
+    """
+    Yüklenen görselin akciğer röntgenine benzer olup olmadığını kaba kurallarla kontrol eder.
+    Bu kontrol kesin tıbbi doğrulama yapmaz; yalnızca alakasız görselleri elemek içindir.
+    """
+    try:
+        img = Image.open(image_path).convert("RGB")
+    except Exception:
+        return False, "Yüklenen dosya geçerli bir görüntü olarak açılamadı."
+
+    width, height = img.size
+
+    # 1) Çok küçük görselleri reddet
+    if width < 200 or height < 200:
+        return False, "Yüklenen görselin çözünürlüğü çok düşük. Lütfen daha uygun bir akciğer röntgen görüntüsü yükleyin."
+
+    # 2) Görseli gri tonlamaya çevir
+    gray = img.convert("L")
+    gray_np = np.array(gray)
+
+    # 3) Kontrast çok düşükse reddet
+    std_dev = float(np.std(gray_np))
+    if std_dev < 15:
+        return False, "Görsel kontrastı çok düşük görünüyor. Bu görüntü uygun bir akciğer röntgeni olmayabilir."
+
+    # 4) Çok renkli görüntüleri ele
+    rgb_np = np.array(img).astype(np.float32)
+    channel_diff = np.mean(np.abs(rgb_np[:, :, 0] - rgb_np[:, :, 1])) + \
+                   np.mean(np.abs(rgb_np[:, :, 1] - rgb_np[:, :, 2]))
+
+    if channel_diff > 25:
+        return False, "Yüklenen görsel akciğer röntgeni formatına uygun görünmüyor. Lütfen göğüs X-ray görüntüsü yükleyin."
+
+    # 5) En-boy oranı çok uçsa reddet
+    aspect_ratio = width / height
+    if aspect_ratio < 0.5 or aspect_ratio > 1.8:
+        return False, "Görsel oranı akciğer röntgeni için alışılmış formatta görünmüyor."
+
+    return True, "Görsel ön kontrolden geçti."
 
 def run_prediction_on_uploaded_file(uploaded_file):
     uploads_dir = BASE_DIR / "streamlit_app" / "temp_uploads"
@@ -40,7 +81,17 @@ def run_prediction_on_uploaded_file(uploaded_file):
     with open(file_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
+    is_valid, message = validate_xray_image(str(file_path))
+
+    if not is_valid:
+        return {
+            "is_valid": False,
+            "validation_message": message
+        }, str(file_path)
+
     result = predict_image(str(file_path))
+    result["is_valid"] = True
+    result["validation_message"] = "Görsel uygun bulundu."
     return result, str(file_path)
 
 

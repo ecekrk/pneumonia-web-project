@@ -15,6 +15,9 @@ st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 st.title("📘 Proje Özeti")
 
+# ---------------------------------------------------
+# HERO
+# ---------------------------------------------------
 st.markdown(
     """
     <div class="hero-card">
@@ -27,143 +30,243 @@ st.markdown(
         </p>
         <p>
             Uygulama; proje özeti, model performansı, canlı tahmin ve sonuç/kaynakça bölümlerinden oluşmaktadır.
-            Böylece kullanıcı hem geliştirilen sistemin teknik ayrıntılarını inceleyebilmekte
-            hem de yeni bir görüntü yükleyerek anlık tahmin alabilmektedir.
         </p>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-st.markdown(
-    """
-    <div class="info-card">
-        <h3>Problem Tanımı</h3>
-        <p>
-            Pnömoni, akciğer dokusunu etkileyen ve özellikle erken tanının önemli olduğu ciddi bir solunum yolu hastalığıdır.
-            Göğüs röntgen görüntülerinin uzmanlar tarafından değerlendirilmesi zaman alabilmekte ve yoğun klinik ortamlarda
-            ek karar destek sistemlerine ihtiyaç duyulabilmektedir. Bu projede, yapay zekâ destekli bir yaklaşım kullanılarak
-            pnömoni vakalarının görüntü tabanlı olarak tespit edilmesi hedeflenmiştir.
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# ---------------------------------------------------
+# PROBLEM
+# ---------------------------------------------------
+st.markdown("""
+<div class="section-card">
 
-st.markdown(
-    """
-    <div class="info-card">
-        <h3>Projenin Amacı ve Önemi</h3>
-        <p>
-            Projenin amacı, göğüs röntgeni görüntülerinden pnömoni tespiti yapabilen,
-            kullanıcı dostu ve açıklayıcı bir web uygulaması geliştirmektir.
-            Bu çalışma; sağlık bilişimi, tıbbi görüntü işleme ve derin öğrenme alanlarının kesişiminde yer almakta olup,
-            yapay zekâ tabanlı karar destek sistemlerinin sağlık alanındaki potansiyelini göstermektedir.
-        </p>
-        <p>
-            Özellikle yüksek <b>recall</b> değeri sayesinde pnömoni vakalarının kaçırılmaması hedeflenmiş,
-            bu nedenle modelin duyarlılığı klinik bakış açısıyla önemli bir avantaj olarak değerlendirilmiştir.
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+### Problem Tanımı
 
+Pnömoni, akciğer dokusunu etkileyen ve erken tanı gerektiren ciddi bir solunum yolu hastalığıdır.  
+
+Göğüs röntgen görüntülerinin manuel incelenmesi zaman alıcıdır ve özellikle yoğun klinik ortamlarda hata payı artabilmektedir.  
+
+Bu nedenle, hızlı, tutarlı ve otomatik karar verebilen yapay zekâ destekli sistemlere ihtiyaç duyulmaktadır.
+
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------
+# AMAÇ
+# ---------------------------------------------------
+st.markdown("""
+<div class="section-card">
+
+### Projenin Amacı ve Önemi
+
+Bu çalışmanın amacı, göğüs röntgen görüntülerinden pnömoni tespiti yapabilen  
+hızlı ve güvenilir bir yapay zekâ modeli geliştirmektir.
+
+Özellikle yüksek **recall (duyarlılık)** değeri sayesinde pnömoni vakalarının kaçırılmaması hedeflenmiştir.  
+
+Bu durum klinik açıdan kritik bir avantaj sağlayarak erken teşhis sürecine katkı sunmaktadır.
+
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------
+# DATASET
+# ---------------------------------------------------
 col1, col2 = st.columns(2, gap="large")
 
 with col1:
-    st.markdown(
-        """
-        <div class="info-card">
-            <h3>Veri Seti</h3>
-            <ul>
-                <li><b>Veri seti:</b> Chest X-Ray Images (Pneumonia)</li>
-                <li><b>Sınıflar:</b> NORMAL, PNEUMONIA</li>
-                <li><b>Train:</b> 4434 görüntü</li>
-                <li><b>Validation:</b> 782 görüntü</li>
-                <li><b>Test:</b> 624 görüntü</li>
-                <li><b>Toplam:</b> 5840 görüntü</li>
-            </ul>
-            <p>
-                Veri seti iki sınıflı bir tıbbi görüntü sınıflandırma problemine uygundur.
-                Veri dağılımında pnömoni sınıfı daha fazla olduğu için sınıf dengesizliği dikkate alınmıştır.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <div class="section-card">
+
+    ### Veri Seti
+
+    - **Veri seti:** Chest X-Ray Images (Pneumonia) – Kaggle  
+    - **Sınıflar:** NORMAL, PNEUMONIA  
+    - **Toplam:** 5840 görüntü  
+    - **Train:** 4434 (%75.9)  
+    - **Validation:** 782 (%13.4)  
+    - **Test:** 624 (%10.7)  
+
+    Veri seti başlangıçta train/validation/test olarak ayrılmıştır.  
+    Ancak validation seti çok küçük olduğu için sınıf dağılımı korunarak yeniden dengelenmiştir.
+
+    </div>
+    """, unsafe_allow_html=True)
 
 with col2:
-    st.markdown(
-        """
-        <div class="info-card">
-            <h3>Veri Ön İşleme ve Eğitim Ayarları</h3>
-            <ul>
-                <li><b>Girdi boyutu:</b> 224 × 224</li>
-                <li><b>Normalize:</b> Uygulandı</li>
-                <li><b>Batch size:</b> 16</li>
-                <li><b>Epoch:</b> 10</li>
-                <li><b>Learning rate:</b> 1e-4</li>
-                <li><b>Augmentation:</b> Kullanılmadı. Çünkü veri seti zaten yeterli çeşitliliğe sahip olup modelin genelleme performansı bu haliyle tatmin edici bulunmuştur.</li>
-            </ul>
-            <p>
-                Görüntüler model girişine uygun hale getirmek için yeniden boyutlandırılmış ve normalize edilmiştir.
-                Eğitim, doğrulama ve test ayrımı ayrı klasör yapısı üzerinden gerçekleştirilmiştir.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <div class="section-card">
 
-st.markdown(
-    """
-    <div class="info-card">
-        <h3>Kullanılan Model ve Seçim Gerekçesi</h3>
-        <p>
-            Bu projede <b>EfficientNet-B3</b> modeli kullanılmıştır. EfficientNet-B3,
-            görüntü sınıflandırma problemlerinde güçlü özellik çıkarımı yapabilen ve transfer learning yaklaşımıyla
-            başarılı sonuçlar verebilen bir derin öğrenme mimarisidir.
-        </p>
-        <p>
-            Basit CNN yapılarıyla karşılaştırıldığında daha güçlü bir temsil kapasitesine sahip olması,
-            tıbbi görüntülerde daha iyi genelleme potansiyeli sunması ve hazır ön eğitimli ağırlıklarla çalışabilmesi
-            nedeniyle tercih edilmiştir.
-        </p>
+    ### Veri Ön İşleme
+
+    - **Resize:** 224 × 224  
+    - **Color:** RGB  
+    - **Normalization:** [-1, 1]  
+    - **Augmentation:** Kullanılmadı  
+
+    Augmentation kullanılmamıştır çünkü veri seti yeterli çeşitliliğe sahiptir ve  
+    model bu veri ile yüksek performans göstermiştir.
+
     </div>
-    """,
-    unsafe_allow_html=True
+    """, unsafe_allow_html=True)
+
+st.code(
+"""
+transform = transforms.Compose([
+
+    transforms.Resize((224, 224)),  # tüm görüntüleri modele uygun boyuta getir
+
+    transforms.ToTensor(),  # görüntüyü PyTorch tensor formatına çevir
+
+    transforms.Normalize(
+        [0.5, 0.5, 0.5],    # ortalama
+        [0.5, 0.5, 0.5]     # standart sapma
+    )  # piksel değerlerini normalize ederek eğitimi stabilize et
+
+])
+""",
+language="python"
+)
+# ---------------------------------------------------
+# MODEL
+# ---------------------------------------------------
+
+# ---------------------------------------------------
+# MODEL
+# ---------------------------------------------------
+
+st.markdown("""
+<div class="section-card">
+
+### Model Seçimi
+
+Bu çalışmada **EfficientNet-B3** modeli tercih edilmiştir.  
+EfficientNet mimarisi, modelin derinliğini, genişliğini ve giriş çözünürlüğünü
+dengeli bir şekilde artıran **compound scaling** yaklaşımına dayanır.
+
+**Tercih edilme nedenleri:**
+
+- Yüksek doğruluk performansı  
+- Transfer learning ile güçlü feature extraction  
+- Daha az parametre ile yüksek verimlilik  
+- Tıbbi görüntülerde ince detayları yakalayabilme  
+
+Pnömoni gibi ince doku farklılıklarının olduğu problemler için
+güçlü feature extraction kritik olduğundan bu model seçilmiştir.
+
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------
+# MODEL MİMARİSİ
+# ---------------------------------------------------
+
+st.markdown("""
+<div class="section-card">
+
+### Model Mimarisi
+
+EfficientNet-B3, MBConv blokları ile çok ölçekli feature extraction yapar.  
+Son katman, iki sınıflı sınıflandırma için yeniden düzenlenmiştir.
+
+- **Backbone:** EfficientNet-B3  
+- **Transfer Learning:** ImageNet  
+- **Output:** 2 sınıf (NORMAL / PNEUMONIA)  
+- **Activation:** Softmax  
+
+Model önce düşük seviyeli (kenar/doku), ardından yüksek seviyeli
+(anatomik yapı) özellikleri öğrenir.
+
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------
+# HYPERPARAMS
+# ---------------------------------------------------
+
+st.markdown("""
+<div class="section-card">
+
+### Hiperparametreler
+
+- **Batch Size:** 16 → GPU belleği ve stabil eğitim dengesi  
+- **Epoch:** 10 → overfitting riskini azaltmak için sınırlı tutuldu  
+- **Learning Rate:** 1e-4 → küçük adımlarla stabil öğrenme  
+- **Optimizer:** Adam → adaptif öğrenme oranı ile hızlı yakınsama  
+- **Loss Function:** CrossEntropyLoss  
+
+Learning rate düşük seçilerek modelin ani dalgalanmalar yerine daha kontrollü öğrenmesi sağlanmıştır.  
+Adam optimizer ise her parametre için ayrı öğrenme oranı ayarlayarak eğitim sürecini hızlandırır.
+
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------
+# TRAINING
+# ---------------------------------------------------
+
+st.markdown("""
+<div class="section-card">
+
+### Eğitim Süreci
+
+Model, eğitim veri seti üzerinde batch'ler halinde eğitilmiş ve her epoch sonunda
+validation seti ile performansı ölçülmüştür.  
+En iyi model validation accuracy değerine göre seçilmiştir.
+
+</div>
+""", unsafe_allow_html=True)
+
+st.code(
+    """
+for epoch in range(EPOCHS):
+
+    model.train()  # eğitim modu
+
+    for images, labels in train_loader:
+
+        outputs = model(images)              # forward pass
+        loss = criterion(outputs, labels)    # loss hesaplama
+
+        optimizer.zero_grad()  # gradient temizleme
+        loss.backward()        # backpropagation
+        optimizer.step()       # ağırlık güncelleme
+
+    model.eval()  # validation modu
+""",
+    language="python"
 )
 
-st.markdown(
-    """
-    <div class="info-card">
-        <h3>Model Mimarisi ve Eğitim Süreci</h3>
-        <p>
-            EfficientNet-B3 modeli transfer learning yaklaşımıyla kullanılmış, son sınıflandırma katmanı
-            ikili sınıflandırma problemine uygun olacak şekilde yeniden düzenlenmiştir.
-            Eğitim sürecinde <b>Adam optimizer</b> ve <b>CrossEntropyLoss</b> kullanılmıştır.
-            Ayrıca sınıf dengesizliğinin etkisini azaltmak amacıyla ağırlıklı kayıp yaklaşımı dikkate alınmıştır.
-        </p>
-        <p>
-            Eğitim sonrasında model, test seti üzerinde değerlendirilmiş ve daha dengeli tahminler elde etmek için
-            karar mekanizmasına <b>threshold optimizasyonu</b> uygulanmıştır.
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# ---------------------------------------------------
+# THRESHOLD
+# ---------------------------------------------------
+st.markdown("""
+<div class="section-card">
 
-st.markdown(
-    """
-    <div class="info-card">
-        <h3>Sistem Nasıl Çalışır?</h3>
-        <p>
-            Kullanıcı canlı tahmin sayfasında bir akciğer röntgen görüntüsü yükler.
-            Sistem bu görüntüyü ön işleme adımlarından geçirir, EfficientNet-B3 modeli ile analiz eder
-            ve görüntü için NORMAL veya PNEUMONIA tahmini üretir.
-            Sonuç ekranında tahmin sınıfı, güven skoru, sınıf olasılıkları ve kullanılan threshold bilgisi gösterilir.
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+### Karar Mekanizması (Threshold)
+
+Model çıktısı olasılık değerleri üretir.  
+Nihai karar, belirlenen threshold değerine göre verilir.
+
+Bu eşik değeri, pnömoni vakalarının kaçırılmaması (yüksek recall) için optimize edilmiştir.
+
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------------------------------------------
+# SYSTEM
+# ---------------------------------------------------
+st.markdown("""
+<div class="section-card">
+
+### Sistem Nasıl Çalışır?
+
+Kullanıcı görüntüyü yükler → model görüntüyü işler →  
+olasılık değerlerini hesaplar → nihai sınıf tahmini oluşturur → sonuç kullanıcıya sunulur.
+
+Sistem, gerçek zamanlı olarak çalışarak hızlı ve anlaşılır bir karar destek mekanizması sağlar.
+
+</div>
+""", unsafe_allow_html=True)

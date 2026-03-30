@@ -10,6 +10,21 @@ def get_custom_css():
             background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
         }
 
+        .section-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 26px;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            transition: all 0.2s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 34px rgba(0,0,0,0.35);
+        }
+
         section[data-testid="stSidebar"] {
             background: #0b1220;
             border-right: 1px solid rgba(255,255,255,0.08);
@@ -69,11 +84,19 @@ def get_custom_css():
         }
 
         .info-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 26px;
-            margin-bottom: 20px;
+            font-family: 'Segoe UI', sans-serif !important;
+            white-space: normal !important;
+        }
+
+        .info-card p, 
+        .info-card li, 
+        .info-card ul {
+            font-family: 'Segoe UI', sans-serif !important;
+            white-space: normal !important;
+        }
+
+        pre, code {
+            white-space: pre-wrap !important;
         }
 
         .result-good {
