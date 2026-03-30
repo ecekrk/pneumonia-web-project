@@ -81,13 +81,19 @@ def run_prediction_on_uploaded_file(uploaded_file):
     with open(file_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
-    # ❌ VALIDATION TAMAMEN KALDIRILDI
+    # ✅ YENİ BASİT VALIDATION
+    is_valid, message = simple_xray_check(str(file_path))
 
+    if not is_valid:
+        return {
+            "is_valid": False,
+            "validation_message": message
+        }, str(file_path)
+
+    # prediction
     result = predict_image(str(file_path))
-
-    # her zaman valid kabul et
     result["is_valid"] = True
-    result["validation_message"] = "Validation devre dışı"
+    result["validation_message"] = "Görsel uygun"
 
     return result, str(file_path)
 
@@ -125,3 +131,26 @@ def load_and_pad_image(image_path, target_size=(900, 520), background_color=(255
 
     canvas.paste(image, (x, y))
     return canvas
+
+
+def simple_xray_check(image_path):
+    try:
+        img = Image.open(image_path).convert("RGB")
+        img_np = np.array(img)
+
+        # RGB kanalları arasındaki fark
+        r, g, b = img_np[:,:,0], img_np[:,:,1], img_np[:,:,2]
+        diff_rg = np.mean(np.abs(r - g))
+        diff_rb = np.mean(np.abs(r - b))
+        diff_gb = np.mean(np.abs(g - b))
+
+        avg_diff = (diff_rg + diff_rb + diff_gb) / 3
+
+        # 🔥 threshold (çok kritik)
+        if avg_diff < 15:
+            return True, "X-ray gibi görünüyor"
+        else:
+            return False, "Bu görüntü X-ray formatında değil"
+
+    except:
+        return False, "Görüntü okunamadı"

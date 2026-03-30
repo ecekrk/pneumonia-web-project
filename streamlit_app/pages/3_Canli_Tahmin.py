@@ -74,6 +74,12 @@ if uploaded_file is not None:
 
     result, saved_path = run_prediction_on_uploaded_file(uploaded_file)
 
+    if not result.get("is_valid", False):
+        st.image(saved_path, use_container_width=True)
+        st.error("Yüklenen görsel bir akciğer röntgeni (X-ray) değildir.")
+        st.info("Lütfen uygun bir X-ray görüntüsü yükleyin.")
+        st.stop()
+
 
     st.session_state.live_history.append({
         "pred": result["predicted_class"],
