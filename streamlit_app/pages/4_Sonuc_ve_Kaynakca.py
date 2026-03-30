@@ -96,22 +96,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -------------------------
-# GELECEK ÇALIŞMALAR
-# -------------------------
-st.markdown("""
-<div class="section-card">
-
-### Gelecek Çalışmalar
-
-- Daha büyük ve çeşitli veri setleri ile modelin yeniden eğitilmesi  
-- Çok sınıflı hastalık tespiti (COVID-19, akciğer nodülleri vb.)  
-- Gerçek zamanlı klinik entegrasyon  
-- Model açıklanabilirliği (Explainable AI) tekniklerinin eklenmesi  
-
-</div>
-""", unsafe_allow_html=True)
-
-# -------------------------
 # KAYNAKÇA
 # -------------------------
 st.markdown("""
